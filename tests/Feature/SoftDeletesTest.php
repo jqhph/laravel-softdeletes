@@ -77,6 +77,7 @@ class SoftDeletesTest extends TestCase
             ->paginate(5);
 
         $this->assertEquals($paginator->getCollection()->count(), 5);
+        $this->assertEquals($paginator->total(), 50); // 总数50
     }
 
     public function testDelete()
