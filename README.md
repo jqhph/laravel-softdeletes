@@ -80,21 +80,21 @@ class Post extends Model
     use SoftDeletes;
     
     /**
- 	 * 自定义软删除表表名，默认为 {$table}_trash 
- 	 * 
-	 * @var string 
- 	 */
+     * 自定义软删除表表名，默认为 {$table}_trash 
+     * 
+     * @var string 
+     */
     protected $trashedTable = 'posts_trash';
     
     /**
- 	 * 自定义软删除表表名，如有需要可以重写此方法
- 	 * 
-	 * @return mixed
-	 */
+     * 自定义软删除表表名，如有需要可以重写此方法
+     * 
+     * @return mixed
+     */
     public function getTrashedTable()
     {
         return $this->trashedTable;
-	}
+    }
 }
 
 ```
@@ -117,26 +117,26 @@ $trashedPosts = Post::onlyTrashed()->where(...)->get();
 
 ```php
 Post::withTrashed()
-	->where(...)
-	->offset(5)
+    ->where(...)
+    ->offset(5)
     ->limit(5)
     ->get();
 
 // 可以使用子查询以及whereHas等
 Post::withTrashed()
-	->whereHas('...', function ($q) {
-	    $q->where(...);
-	})
-	->offset(5)
+    ->whereHas('...', function ($q) {
+        $q->where(...);
+    })
+    ->offset(5)
     ->limit(5)
     ->get();
     
 // 分页
 Post::withTrashed()
-	->whereHas('...', function ($q) {
-		$q->where(...);
-	})
-	->paginate(10);
+    ->whereHas('...', function ($q) {
+ 	$q->where(...);
+    })
+    ->paginate(10);
 ```
 
 软删除/硬删除/还原
