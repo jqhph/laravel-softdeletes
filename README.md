@@ -1,6 +1,6 @@
 <div align="center">
 
-# LARAVEL WHERE HAS IN
+# LARAVEL SOFTDELETES
 
 <p>
     <a href="https://github.com/jqhph/laravel-softdeletes/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-7389D8.svg?style=flat" ></a>
