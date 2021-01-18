@@ -2,10 +2,10 @@
 
 namespace Dcat\Laravel\Database;
 
-use Illuminate\Database\Query\Builder as Query;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Query\Builder as Query;
 use Illuminate\Support\Str;
 
 class TrashedScope implements Scope

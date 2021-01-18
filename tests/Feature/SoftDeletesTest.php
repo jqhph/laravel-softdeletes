@@ -5,7 +5,6 @@ namespace Dcat\Laravel\Database\Tests\Feature;
 use Dcat\Laravel\Database\Tests\Models\Post;
 use Dcat\Laravel\Database\Tests\TestCase;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class SoftDeletesTest extends TestCase
 {
@@ -18,7 +17,6 @@ class SoftDeletesTest extends TestCase
             $sql,
             'select * from `posts` where `author_id` > 0'
         );
-
     }
 
     public function testOnlyTrashed()

@@ -54,7 +54,7 @@ class SoftDeletingScope implements Scope
                     return $originalBuilder->toBase()->delete();
                 }
 
-                $collections->transform(function (Model $model) use ($originalBuilder, $builder) {
+                $collections->transform(function (Model $model) {
                     $data = $model->getOriginal();
 
                     $data[$model->getDeletedAtColumn()] = $model->fromDateTime($model->freshTimestampString());
@@ -103,7 +103,7 @@ class SoftDeletingScope implements Scope
             $collections = $builder->get();
 
             $model->transaction(function () use ($collections, $originalBuilder, $builder, $model, &$result) {
-                $collections->transform(function (Model $model) use ($originalBuilder) {
+                $collections->transform(function (Model $model) {
                     $data = $model->getOriginal();
 
                     unset($data[$model->getDeletedAtColumn()]);
