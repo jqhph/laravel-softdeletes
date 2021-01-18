@@ -13,7 +13,7 @@
 
 </div>
 
-`Laravel softdeletes`是一个用于替代`Laravel`内置的软删除`softDelets`功能的扩展包，可以把软删数据存储到独立的数据表中，从而不影响原始表字段增加唯一索引，且可以起到提升性能的作用。
+`Laravel softdeletes`是一个用于替代`Laravel`内置的软删除`softDelets`功能的扩展包，可以把软删数据存储到独立的数据表中，从而不影响给原始表字段增加唯一索引，且可以起到提升性能的作用。
 
 
 ## 环境
@@ -31,7 +31,7 @@ composer require dcat/laravel-softdeletes
 ### 简介
 
 `Laravel`内置的`softDelets`功能会把软删的数据和正常数据存在同一个数据表中，这样会导致数据表的字段无法直接添加`unique`索引，因为很容易产生冲突，这样会给实际业务开发带来诸多不必要的困扰。
-而`Laravel softdeletes`则可以把软删数据存储到独立的数据表中，从而不影响原始表字段增加唯一索引，且可以起到提升性能的作用。
+而`Laravel softdeletes`则可以把软删数据存储到独立的数据表中，从而不影响给原始表字段增加唯一索引，且可以起到提升性能的作用。
 
 
 ### 使用
@@ -152,6 +152,12 @@ $post->restore();
 
 // 硬删
 $post->forceDelete();
+
+// 批量软删
+Post::where(...)->delete();
+
+// 批量硬删
+Post::onlyTrashed()->where(...)->delete();
 ```
 
 
