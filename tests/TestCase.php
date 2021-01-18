@@ -14,8 +14,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function setUp(): void
     {
-        include_once __DIR__.'/helpers.php';
-
         parent::setUp();
 
         $this->app['config']->set('database.default', 'mysql');

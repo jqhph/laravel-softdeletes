@@ -107,6 +107,24 @@ class SoftDeletesTest extends TestCase
         $this->assertEquals(Post::onlyTrashed()->count(), 0);
     }
 
+    public function testBuilderDelete()
+    {
+        $count = 5;
+        $total = Post::count();
+
+        // 批量软删
+        Post::query()->limit($count)->delete();
+
+        $this->assertEquals(Post::onlyTrashed()->count(), $count);
+        $this->assertEquals(Post::count(), $total - $count);
+
+        // 批量硬删
+        Post::onlyTrashed()->limit($count)->delete();
+
+        $this->assertEquals(Post::onlyTrashed()->count(), 0);
+        $this->assertEquals(Post::count(), $total - $count);
+    }
+
     public function testForceDelete()
     {
         $count = 5;
