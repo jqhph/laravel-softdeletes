@@ -51,16 +51,28 @@ class SoftDeletingScope implements Scope
                     return $originalBuilder->toBase()->delete();
                 }
 
-                $inserts = $builder->get()->transform(function (Model $model) {
-                    $data = $model->getOriginal();
+                $trash = function ($collection) use ($builder, $model) {
+                    $inserts = $collection->map(function (Model $model) {
+                        $data = $model->getOriginal();
 
-                    $data[$model->getDeletedAtColumn()] = $model->freshTimestampString();
+                        $data[$model->getDeletedAtColumn()] = $model->freshTimestampString();
 
-                    return $data;
-                });
+                        return $data;
+                    });
 
-                // 写入回收表
-                $builder->from($model->getTrashedTable())->insert($inserts->toArray());
+                    // 写入回收表
+                    $builder->from($model->getTrashedTable())->insert($inserts->toArray());
+                };
+
+                if ($builder->getQuery()->limit || $builder->getQuery()->offset) {
+                    $trash($builder->get());
+                } else {
+                    if ($model->incrementing) {
+                        $builder->chunkById(1000, $trash);
+                    } else {
+                        $builder->chunk(1000, $trash);
+                    }
+                }
 
                 // 删除原始表数据
                 $result = $originalBuilder->toBase()->delete();
