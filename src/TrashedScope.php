@@ -33,7 +33,7 @@ class TrashedScope implements Scope
             ->union(
                 $trashBuilder
                     ->withoutGlobalScope('withTrashed')
-                    ->from($trashModel->getTable(), $originalTable)
+                    ->from("{$trashModel->getTable()} as {$originalTable}")
             )
             ->when($offset !== null, function (Builder $builder) use ($offset) {
                 $builder->offset($offset);
