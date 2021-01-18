@@ -17,7 +17,7 @@ function create_posts()
         $model->save();
 
         $author = new Models\Author([
-           'name' => $factory->name,
+            'name' => $factory->name,
         ]);
 
         $author->save();
