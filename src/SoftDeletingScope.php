@@ -41,45 +41,60 @@ class SoftDeletingScope implements Scope
         $builder->onDelete(function (Builder $builder) {
             /* @var Model $model */
             $model = $builder->getModel();
-            $originalBuilder = clone $builder;
 
-            $result = null;
-
-            $model->transaction(function () use ($originalBuilder, $builder, $model, &$result) {
+            return $model->transaction(function () use ($builder, $model) {
                 if ($model->canDelete || $model->getTable() === $model->getTrashedTable()) {
                     // 回收站强制删除
-                    return $originalBuilder->toBase()->delete();
+                    return $builder->toBase()->delete();
                 }
 
-                $trash = function ($collection) use ($builder, $model) {
-                    $inserts = $collection->map(function (Model $model) {
-                        $data = $model->getOriginal();
+                return $this->softDelete($builder);
+            });
+        });
+    }
 
-                        $data[$model->getDeletedAtColumn()] = $model->freshTimestampString();
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     *
+     * @return int
+     */
+    protected function softDelete(Builder $builder)
+    {
+        /* @var Model $model */
+        $model = $builder->getModel();
+        $keyName = $model->getKeyName();
 
-                        return $data;
-                    });
+        $count = 0;
 
-                    // 写入回收表
-                    $builder->from($model->getTrashedTable())->insert($inserts->toArray());
-                };
+        $trash = function ($collection) use ($builder, $model, $keyName, &$count) {
+            $inserts = $collection->map(function (Model $model) {
+                $data = $model->getOriginal();
 
-                if ($builder->getQuery()->limit || $builder->getQuery()->offset) {
-                    $trash($builder->get());
-                } else {
-                    if ($model->incrementing) {
-                        $builder->chunkById(1000, $trash);
-                    } else {
-                        $builder->chunk(1000, $trash);
-                    }
-                }
+                $data[$model->getDeletedAtColumn()] = $model->freshTimestampString();
 
-                // 删除原始表数据
-                $result = $originalBuilder->toBase()->delete();
+                return $data;
             });
 
-            return $result;
-        });
+            // 写入回收表
+            $builder->from($model->getTrashedTable())->insert($inserts->toArray());
+
+            // 删除原始表数据
+            $model->newQuery()->whereIn($keyName, $inserts->pluck($keyName))->toBase()->delete();
+
+            $count += $inserts->count();
+        };
+
+        if ($builder->getQuery()->limit || $builder->getQuery()->offset) {
+            $trash($builder->get());
+        } else {
+            if ($model->incrementing) {
+                $builder->chunkById(1000, $trash);
+            } else {
+                $builder->chunk(1000, $trash);
+            }
+        }
+
+        return $count;
     }
 
     /**
